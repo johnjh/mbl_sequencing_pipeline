@@ -61,7 +61,7 @@ def trim_anchor_helper(anchor_name, expanded_anchor_sequences, freedom, length, 
     logger.debug( 'looking for anchor: ' + anchor_name + " start: " + str(start) + " length: " + str(length))
     max_divergence  = C.max_divergence
     logger.debug('anchor_list: ' + str(expanded_anchor_sequences))
-    list_of_tuples = anchortrim.generate_tuples(start, freedom, length, reversed_read=False)
+    list_of_tuples = anchortrim.generate_tuples(start, freedom, length, list_of_tuples = [], reversed_read=False)
     logger.debug('anchor tuples: ' + str(list_of_tuples))
     anchor, location = anchortrim.find_best_distance(sequence, expanded_anchor_sequences, max_divergence, list_of_tuples)
     

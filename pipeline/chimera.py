@@ -7,11 +7,11 @@ import pipeline.constants as C
 
 class Chimera:
     """ Define here """
-    def __init__(self, run = None, outdir= None, args = None):
+    def __init__(self, run = None):
         self.run       = run
         self.run_keys  = self.run.run_keys
         self.rundate   = self.run.run_date
-        self.outdir    = outdir
+        self.outdir    = run.base_output_dir
         
         self.usearch_cmd = 'usearch'
         self.abskew = '1.9'
@@ -21,7 +21,7 @@ class Chimera:
         time.sleep(10)
         for lane_key in self.run.run_keys:
             #if file exists and if dna_region is v6v4 or v3v5:
-            self.prefix[lane_key] = './' + outdir + '/' + lane_key
+            self.prefix[lane_key] = './' + self.outdir + '/' + lane_key
             self.files[lane_key] = {}
             self.files[lane_key]['names']       = self.prefix[lane_key] + '.names'
             self.files[lane_key]['unique']      = self.prefix[lane_key] + '.unique.fa'
@@ -50,10 +50,6 @@ class Chimera:
             else:
                 logger.debug('region not checked: ' +  dna_region)
                 continue
-            
-            
-            # file existance has already been checked in __init__             
-  
             
             out_fileName = self.prefix[lane_key] + ".chimeras.txt"        
             #clusterize uchime454 -replace -r self.rundate -t chimeras_denovo
@@ -105,7 +101,7 @@ class Chimera:
             if dna_region in C.regions_to_chimera_check:
                 chimera_region_found = True
             else:
-                if self.VERBOSE: print 'region not checked', dna_region
+                logger.debug('region not checked: ' + dna_region)                    
                 continue
             
             out_fileName = self.prefix[lane_key] + ".chimeras.db"      
@@ -127,7 +123,7 @@ class Chimera:
                 #print 'Have %d bytes in output' % len(output)
                 #print 'ref',lane_key,output,len(output)
                 if len(output[lane_key]) < 50 and len(output[lane_key]) > 40:
-                    if self.VERBOSE: print  lane_key,"uchime ref seems to have been submitted successfully"
+                    logger.debug(lane_key + " uchime ref seems to have been submitted successfully")                    
                 else:
                     print >>sys.stderr, "uchime ref may be broke"
                

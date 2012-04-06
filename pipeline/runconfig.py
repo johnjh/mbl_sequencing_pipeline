@@ -32,7 +32,7 @@ def configDictionaryFromFile(config_file_path):
 
 class RunConfig:
     """Doc string here."""
-    def __init__(self, config_info):
+    def __init__(self, config_info, baseoutputdir):
         self.run_date   = None
         self.platform   = None # enum('454','illumina','ion_torrent','')
         self.input_dir  = None
@@ -59,10 +59,14 @@ class RunConfig:
         self.anchors = ast.literal_eval(anchor_json_text)
 
         # this is our default output dir
-        self.base_output_dir = "pipeline_output"
+        self.base_output_dir = baseoutputdir #user supplied or default
         self.output_dir = os.path.join(self.base_output_dir, self.run_date)
-        self.status_file = os.path.join(self.output_dir, 'status')
-        self.status_file_h = None #handle to file
+        # not sure if this setup should be here or in trim?  here for now
+        self.trim_status_file_name = os.path.join(self.output_dir, 'trim_status.txt')
+        self.trim_status_file_h = None #handle to file
+        # not sure if this setup should be here or in chimera?  here for now
+        self.chimera_status_file_name = os.path.join(self.output_dir, 'chimera_status.txt')
+        self.chimera_status_file_h = None #handle to file
         
     
 

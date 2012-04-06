@@ -87,7 +87,6 @@ def generate_tuples(start, freedom, length, direction = -1, step = 0, list_of_tu
     so, if you know where it is likely to find the pattern, you can start from there, and expand search to both
     directions step by step in a somewhat optimized way.
     """
-
     if reversed_read:
         list_of_tuples.append((-(start), -(start - length)))
     else:

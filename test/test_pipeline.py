@@ -2,38 +2,25 @@ import unittest
 from  pipelineprocessor import process
 from pipeline.run import Run
 from pipeline.runconfig import configDictionaryFromFile
+from pipeline.utils import convert_unicode_dictionary_to_str
 import os
 from pipeline.pipelinelogging import logger
 import logging
-from Bio import SeqIO
 import json
-import collections
-
-# the json expected files get loaded and parsed into Unicode strings
-# but the asserts won't work comparing unicode to ascii so we need change them
-# to plain strings
-def convert(data):
-    if isinstance(data, unicode):
-        return str(data)
-    elif isinstance(data, collections.Mapping):
-        return dict(map(convert, data.iteritems()))
-    elif isinstance(data, collections.Iterable):
-        return type(data)(map(convert, data))
-    else:
-        return data        
+from Bio import SeqIO
 
 
 class TestPipeline(unittest.TestCase):
     BASE_OUTPUT = 'pipeline_output/' 
     def setUpForward(self):
         config_dict = configDictionaryFromFile("test/data/trim_test_forward.ini")
-        self.run = Run(config_dict)
+        self.run = Run(config_dict, self.BASE_OUTPUT)
         process(self.run,"trim")
         self.expected = self.get_expected_results('test/data/test_trim_forward.results')
 
     def setUpReverse(self):
         config_dict = configDictionaryFromFile("test/data/trim_test_reverse.ini")
-        self.run = Run(config_dict)
+        self.run = Run(config_dict, self.BASE_OUTPUT)
         process(self.run,"trim")
         self.expected = self.get_expected_results('test/data/test_trim_reverse.results')
 
@@ -52,6 +39,12 @@ class TestPipeline(unittest.TestCase):
         self.run_test_names_files()
         self.run_test_trimmed_files()
         self.run_test_unique_files()
+        self.run_test_status_file()
+        
+    def run_test_status_file(self):
+        trim_status_dict = convert_unicode_dictionary_to_str(json.loads(open(os.path.join(self.BASE_OUTPUT, os.path.join(self.run.run_date,"trim_status.txt")), 'r').read()))
+        expected_trim_status = self.expected['trim_status']
+        self.assertDictEqual(trim_status_dict, expected_trim_status)
         
     def run_test_unique_files(self):
         unique_dict = self.get_unique_info()
@@ -79,7 +72,7 @@ class TestPipeline(unittest.TestCase):
         self.assertSetEqual(set(no_keys_by_lane_dict.keys()), set(self.expected['no_key_deletions']))
 
     def get_expected_results(self, expected_results_file):
-        return convert(json.loads(open(expected_results_file,'r').read()))
+        return convert_unicode_dictionary_to_str(json.loads(open(expected_results_file,'r').read()))
 
     def get_names_info(self):
         base_path = self.BASE_OUTPUT + self.run.run_date

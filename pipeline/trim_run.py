@@ -14,6 +14,7 @@
 #
 import os
 import shutil
+import md5
 
 from suites.primer import PrimerSuite
 from pipeline.primer_utils import *
@@ -176,6 +177,7 @@ class TrimRun( object ):
                 seq = record.seq.tostring().upper()
                 trim_data = self.do_trim(id, lane, seq, q_scores)
                 
+
                 deleted         = trim_data.get('deleted',None)
                 lane_tag        = trim_data.get('lane_key',None)
                 seq             = trim_data.get('trimmed_sequence',None)        

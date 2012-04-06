@@ -28,8 +28,7 @@ from pipeline.gast import Gast
 from pipeline.pipelinelogging import logger
 from pipeline.trim_run import TrimRun
 import logging
-import argparse
-    
+import json    
 
 TRIM_STEP = "trim"
 CHIMERA_STEP = "chimera"
@@ -45,26 +44,43 @@ existing_steps = [TRIM_STEP, CHIMERA_STEP, GAST_STEP, VAMPSUPLOAD]
 # when complete...write out the datafiles for the most part on a lane/runkey basis
 #
 def trim(run):
+    # (re) create the trim status file
+    run.trim_status_file_h = open(run.trim_status_file_name, "w")
+    # do the trim work
     mytrim = TrimRun(run)        
     # pass True to write out the straight fasta file of all trimmed non-deleted seqs
     # Remember: this is before chimera checking
     trim_codes = mytrim.trimrun(True)
+    trim_results_dict = {}
     if trim_codes[0] == 'SUCCESS':
+        # setup to write the status
         new_lane_keys = trim_codes[2]
+        trim_results_dict['status'] = "success"
+        trim_results_dict['new_lane_keys'] = new_lane_keys
         logger.debug("Trimming finished successfully")
-        run.status_file_h.write("TRIM SUCCESS\n")
-        run.status_file_h.write("new_lane_keys="+','.join(new_lane_keys)+"\n")            
-        # write_data_files: names, unique and abund files
+        # write the data files
         mytrim.write_data_files(new_lane_keys)
+        run.trim_status_file_h.write(json.dumps(trim_results_dict))
+        run.trim_status_file_h.close()
     else:
-        print ("Trimming Failed")
-        run.status_file_h.write("TRIM ERROR: "+trim_codes[1]+" "+trim_codes[2]+"\n")
+        logger.debug("Trimming finished ERROR")
+        trim_results_dict['status'] = "error"
+        trim_results_dict['code1'] = trim_codes[1]
+        trim_results_dict['code2'] = trim_codes[2]
+        run.trim_status_file_h.write(json.dumps(trim_results_dict))
+        run.trim_status_file_h.close()
         sys.exit()
-        
+
+# chimera assumes that a trim has been run and that there are files
+# sitting around that describe the results of each lane:runkey sequences
+# it also expectes there to be a trim_status.txt file around
+# which should have a json format with status and the run keys listed        
 def chimera(run):
     chimera_cluster_ids = [] 
     logger.debug("Starting Chimera Checker")
-    mychimera = Chimera(run, outputdir, args)
+    # lets read the trim status file out here and keep those details out of the Chimera code
+    new_lane_keys = convert_unicode_dictionary_to_str(json.loads(open(run.trim_status_file_name,"r").read()))["new_lane_keys"]
+    mychimera = Chimera(run)
     c_den    = mychimera.chimera_denovo(new_lane_keys)
     if c_den[0] == 'SUCCESS':
         chimera_cluster_ids += c_den[2]
@@ -92,28 +108,28 @@ def chimera(run):
     
     if chimera_code == 'PASS':  
         
-        chimera_cluster_code = wait_for_cluster_to_finish(chimera_cluster_ids,args) 
+        chimera_cluster_code = wait_for_cluster_to_finish(chimera_cluster_ids) 
         if chimera_cluster_code[0] == 'SUCCESS':
             logger.info("Chimera checking finished successfully")
-            status_file_h.write("CHIMERA SUCCESS\n")
+            run.chimera_status_file_h.write("CHIMERA SUCCESS\n")
             
             
         else:
             logger.info("Chimera checking Failed")
-            status_file_h.write("CHIMERA ERROR: "+str(chimera_cluster_code[1])+" "+str(chimera_cluster_code[2])+"\n")
+            run.chimera_status_file_h.write("CHIMERA ERROR: "+str(chimera_cluster_code[1])+" "+str(chimera_cluster_code[2])+"\n")
             sys.exit()
             
     elif chimera_code == 'NOREGION':
         logger.info("No regions found that need chimera checking")
-        status_file_h.write("CHIMERA CHECK NOT NEEDED\n")
+        run.chimera_status_file_h.write("CHIMERA CHECK NOT NEEDED\n")
         
     elif chimera_code == 'FAIL':
         logger.info("Chimera checking Failed")
-        status_file_h.write("CHIMERA ERROR: \n")
+        run.chimera_status_file_h.write("CHIMERA ERROR: \n")
         sys.exit()
     else:
         logger.info("Chimera checking Failed")
-        status_file_h.write("CHIMERA ERROR: \n")
+        run.chimera_status_file_h.write("CHIMERA ERROR: \n")
         sys.exit()
     sleep(2)   
     if  go_chimera and chimera_code == 'PASS' and  chimera_cluster_code[0] == 'SUCCESS':
@@ -171,30 +187,8 @@ def process(run, steps):
     requested_steps = steps.split(",")            
     
     if not os.path.exists(run.output_dir):
-        logger.debug("Creating directory: "+run.output_dir)
+        logger.debug("Creating output directory: "+run.output_dir)
         os.makedirs(run.output_dir)      
-        run.status_file_h = open(run.status_file,"a")
-    elif("trim" in requested_steps):
-        logger.debug("Removing and recreating directory: "+run.output_dir)
-        shutil.rmtree(run.output_dir)        
-        os.makedirs(run.output_dir)
-        run.status_file_h = open(run.status_file,"a")
-        run.status_file_h.write("TRIM STARTING\n")
-        logger.debug("Output directory exists: overwriting")
-    else:
-        logger.debug("Keeping directory: "+run.output_dir)
-        # reading and writing 'r+'
-        run.status_file_h = open(run.status_file,"r+")
-        logger.debug("found status file",run.status_file)
-        for line in run.status_file_h.readlines():
-            line = line.strip()
-            if line.split('=')[0] == 'new_lane_keys':
-                new_lane_keys = line.split('=')[1].split(',')
-                #logger.debug('new_lane_keys',new_lane_keys
-                if type(new_lane_keys) is not types.ListType:
-                    run.status_file_h.write("READ ERROR: No lane_keys found\n")
-                    logger.debug("READ ERROR: No lane_keys found\n")
-                    sys.exit()
                     
     # loop through official list...this way we execute the
     # users requested steps in the correct order                
@@ -206,5 +200,3 @@ def process(run, steps):
             # call the method in here
             step_method = globals()[step]
             step_method(run)
-    
-    run.status_file_h.close()

@@ -1,4 +1,5 @@
 {
+	"trim_status" : {"status": "success", "new_lane_keys": ["2_ACACA","1_ACACA"]},
 	"unique" : {
 					"2_ACACA" : { 
 								"SEQ1" : "CCCCCCCCCGGGGG"

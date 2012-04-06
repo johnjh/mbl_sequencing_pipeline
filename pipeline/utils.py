@@ -5,8 +5,24 @@ from pipeline.primer_utils import expand
 from time import sleep
 from pipeline.pipelinelogging import logger
 from string import maketrans
+import collections
 
 base_complement_translator = maketrans("ACGT", "TGCA")
+
+# the json expected files get loaded and parsed into Unicode strings
+# but the asserts won't work comparing unicode to ascii so we need change them
+# to plain strings
+def convert_unicode_dictionary_to_str(data):
+    if isinstance(data, unicode):
+        return str(data)
+    elif isinstance(data, collections.Mapping):
+        return dict(map(convert_unicode_dictionary_to_str, data.iteritems()))
+    elif isinstance(data, collections.Iterable):
+        return type(data)(map(convert_unicode_dictionary_to_str, data))
+    else:
+        return data        
+
+
 ########################################################    
 def check_for_Ns(seq):
     """Doc string here.."""
@@ -110,7 +126,7 @@ options = {
         10 : set_all10,
 }
  
-def wait_for_cluster_to_finish(my_running_id_list, args):
+def wait_for_cluster_to_finish(my_running_id_list):
     #print 'My IDs',running_id_list
     logger.debug('Max run time set to ' + str(C.cluster_max_wait) + ' seconds')
     logger.debug('These are my running qsub IDs ' + my_running_id_list)
