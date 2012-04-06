@@ -105,7 +105,7 @@ def chimera(run):
         chimera_code='FAIL'
     
     #print chimera_cluster_ids
-    
+    run.chimera_status_file_h = open(run.chimera_status_file_name,"w")
     if chimera_code == 'PASS':  
         
         chimera_cluster_code = wait_for_cluster_to_finish(chimera_cluster_ids) 
