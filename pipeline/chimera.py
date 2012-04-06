@@ -21,7 +21,7 @@ class Chimera:
         time.sleep(10)
         for lane_key in self.run.run_keys:
             #if file exists and if dna_region is v6v4 or v3v5:
-            self.prefix[lane_key] = './' + self.outdir + '/' + lane_key
+            self.prefix[lane_key] = os.path.join(os.path.join(self.outdir, self.rundate), lane_key)
             self.files[lane_key] = {}
             self.files[lane_key]['names']       = self.prefix[lane_key] + '.names'
             self.files[lane_key]['unique']      = self.prefix[lane_key] + '.unique.fa'
