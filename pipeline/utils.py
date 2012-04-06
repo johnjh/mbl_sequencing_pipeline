@@ -129,7 +129,7 @@ options = {
 def wait_for_cluster_to_finish(my_running_id_list):
     #print 'My IDs',running_id_list
     logger.debug('Max run time set to ' + str(C.cluster_max_wait) + ' seconds')
-    logger.debug('These are my running qsub IDs ' + my_running_id_list)
+    logger.debug('These are my running qsub IDs ' + str(my_running_id_list))
     my_working_id_list = my_running_id_list
 
     counter =0
@@ -162,14 +162,14 @@ def wait_for_cluster_to_finish(my_running_id_list):
             if code == 'Eqw':
                 return ('FAIL','Found Eqw code',my_working_id_list[0])
             elif code == 'qw':
-                logger.debug("id is still queued: " +  my_working_id_list[0] + " " + code)
+                logger.debug("id is still queued: " +  str(my_working_id_list[0]) + " " + str(code))
             elif code == 'r':
-                logger.debug("id is still running: " + my_working_id_list[0] + " " + code)
+                logger.debug("id is still running: " + str(my_working_id_list[0]) + " " + str(code))
             else:
-                logger.debug('Unknown qstat code ' + code)
+                logger.debug('Unknown qstat code ' + str(code))
         else:
             my_working_id_list = my_working_id_list[1:]
-            logger.debug('id finished ' + my_working_id_list[0])
+            logger.debug('id finished ' + str(my_working_id_list[0]))
  
         if not my_working_id_list:
             return ('SUCCESS','not my_working_id_list','')
