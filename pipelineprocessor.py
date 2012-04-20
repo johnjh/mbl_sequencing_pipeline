@@ -29,6 +29,7 @@ from pipeline.pipelinelogging import logger
 from pipeline.trim_run import TrimRun
 import logging
 import json    
+from pipeline.fasta_mbl_pipeline import MBLPipelineFastaUtils
 
 TRIM_STEP = "trim"
 CHIMERA_STEP = "chimera"
@@ -132,13 +133,13 @@ def chimera(run):
         run.chimera_status_file_h.write("CHIMERA ERROR: \n")
         sys.exit()
     sleep(2)   
-    if  go_chimera and chimera_code == 'PASS' and  chimera_cluster_code[0] == 'SUCCESS':
+    if  chimera_code == 'PASS' and  chimera_cluster_code[0] == 'SUCCESS':
         mychimera.write_chimeras_to_deleted_file(new_lane_keys)
         # should also recreate fasta
         # then read chimera files and place (or replace) any chimeric read_id
         # into the deleted file.
         
-        mymblutils = MBLPipelineFastaUtils(outputdir=outputdir,lane_keys=new_lane_keys)
+        mymblutils = MBLPipelineFastaUtils(new_lane_keys, mychimera.outdir)
         
         # write new cleaned files that remove chimera if apropriate
         # these are in fasta_mbl_pipeline.py

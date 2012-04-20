@@ -1,13 +1,13 @@
 import os, sys
 from subprocess import check_output
 import constants as C
-from pipeline.primer_utils import expand
 from time import sleep
 from pipeline.pipelinelogging import logger
 from string import maketrans
 import collections
 
-base_complement_translator = maketrans("ACGT", "TGCA")
+
+base_complement_translator = maketrans("ACGTRYMK", "TGCAYRKM")
 
 # the json expected files get loaded and parsed into Unicode strings
 # but the asserts won't work comparing unicode to ascii so we need change them
@@ -36,18 +36,10 @@ def remove_runkey(seq,runkeys):
     """Doc string here.."""
     found_key = ''
     for key in runkeys:
-        # find at first position BUG need to add TCAG to front to find key
-        # is this a problem with the sff_extraction script??
-        #key_plus = 'TCAG' + key
-        #print seq.find(key)
         if (seq.find(key) == 0):
             found_key = key
             seq = seq[len(key):]
             break
-#         elif(seq.find(key) > 0 and seq.find(key) < 5): 
-#             found_key = key
-#             seq = seq[seq.find(key) + len(key):]   
-#             break   
         else:
             continue 
     return found_key, seq
@@ -233,6 +225,9 @@ def mysort(uniques,names):
     return sorted_uniques     
 
 
+if __name__=='__main__':
+    print "GTTCAAAGAYTCGATGATTCAC"
+    print revcomp("GTTCAAAGAYTCGATGATTCAC")
 
 
 

@@ -114,6 +114,9 @@ def do_actual_distal_trim(p, seq, allow_offset):
         if len_of_trimmed == len(p) or (allow_offset and (seq_len-(p_index+len(p)) <= C.distal_from_end)):
             seq = seq[:p_index]            
             return primer_found, trimmedPortion, seq
+        else:
+            seq = seq[:p_index]            
+            return primer_found, trimmedPortion, seq
     return ('','','')
   
 def trim_fuzzy_distal(anchors_list, seq, trim_type, start, end):
@@ -348,6 +351,7 @@ def get_anchor_list(run, anchor_name, adtnl_anchors_list):
 
 if __name__=='__main__':
     import unittest
+    from utils import revcomp
     
     class TestAll(unittest.TestCase):
     
@@ -453,6 +457,10 @@ if __name__=='__main__':
         def simple_replace_test(self, placeholder_base, new_x, new_y):
             result_template_strings = ["xA", "xC", "xG", "xT", "yA", "yC", "yG", "yT"]
             self.assertEqual(set(expand(placeholder_base + "N")), set(self.replace_template_xy(result_template_strings, new_x, new_y)))
+            
+    print "expanded: " + str(expand(revcomp("GTGAATCATCGAYTCTTTGAAC")))
+    
+    
     logger.setLevel(logging.DEBUG)        
     unittest.main()
     

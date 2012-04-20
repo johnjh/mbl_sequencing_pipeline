@@ -113,7 +113,9 @@ class TrimRun( object ):
                 self.distal_primers[lane_key]   = [revcomp(primer_seq) for primer_seq in self.psuite[lane_key].primer_expanded_seq_list['F'] ] 
                 if self.anchor_name[lane_key]:
                     self.anchors[lane_key] = [revcomp( anchor ) for anchor in get_anchor_list(self.run, self.anchor_name[lane_key], self.adtnl_anchors[lane_key]) ]
-                    
+            
+            if len(self.proximal_primers[lane_key]) == 0 and len(self.distal_primers[lane_key]) == 0:
+                logger.debug("**** Didn't find any primers that match any of the domain/regions in the lane/key sections")
     #
     #  initialize counters for deletes and open stats file
     #    for each input file
@@ -472,9 +474,19 @@ class TrimRun( object ):
             # Write deleted.txt file   
             if lane_key in self.deleted_ids and self.deleted_ids[lane_key]:
                 f_del   = open(delFileName,  "w") 
+                reason_counts = {}
                 for id in self.deleted_ids[lane_key]:
                     reason = self.deleted_ids[lane_key][id]                
                     f_del.write(id+"\t"+reason+"\n")
+                    current_count = reason_counts.get(reason, 0)
+                    reason_counts[reason] = current_count + 1
+                # now write out some stats
+                f_del.write("\nTotal Passed Reads in this lane/key: " + str(len(self.names[lane_key])) + "\n")
+                if(len(self.names[lane_key]) > 0):
+                    for key,value in reason_counts.items():
+                        f_del.write(" " + key + ": " + str(value) + " " + str(float(value*100.0)/float(len(self.names[lane_key]))) + "% of total \n")                
+                else:
+                    pass
                 f_del.close()
                 logger.debug("wrote deleted file: "  + delFileName)
             

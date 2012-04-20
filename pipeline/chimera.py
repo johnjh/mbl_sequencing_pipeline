@@ -11,7 +11,7 @@ class Chimera:
         self.run       = run
         self.run_keys  = self.run.run_keys
         self.rundate   = self.run.run_date
-        self.outdir    = run.base_output_dir
+        self.outdir    = run.output_dir
         
         self.usearch_cmd = 'usearch'
         self.abskew = '1.9'
@@ -21,7 +21,7 @@ class Chimera:
         time.sleep(10)
         for lane_key in self.run.run_keys:
             #if file exists and if dna_region is v6v4 or v3v5:
-            self.prefix[lane_key] = os.path.join(os.path.join(self.outdir, self.rundate), lane_key)
+            self.prefix[lane_key] = os.path.join(self.outdir, lane_key)
             self.files[lane_key] = {}
             self.files[lane_key]['names']       = self.prefix[lane_key] + '.names'
             self.files[lane_key]['unique']      = self.prefix[lane_key] + '.unique.fa'
@@ -65,6 +65,7 @@ class Chimera:
             uchime_cmd.append(self.abskew)
             
             try:
+                print "chimera denovo command: " + str(uchime_cmd)
                 output[lane_key] = subprocess.check_output(uchime_cmd)
                 #print output[lane_key]
                 #print output[lane_key].split()[2]
@@ -117,6 +118,7 @@ class Chimera:
             
             
             try:
+                print "chimera referenc command: " + str(uchime_cmd)
                 output[lane_key] = subprocess.check_output(uchime_cmd)
                 #print 'outsplit',output[lane_key].split()[2]
                 cluster_id_list.append(output[lane_key].split()[2])

@@ -1,4 +1,9 @@
 {
+	"Eukaryal:ITS-1" : 
+		{
+			"ITS-1F" :  {"domain":"eukarya", "region":"ITS-1", "direction":"F","sequence":"GTAAAAGTCGTAACAAGGTTTC"},
+			"ITS-1R" :  {"domain":"eukarya", "region":"ITS-1", "direction":"R","sequence":"GTGAATCATCGARTCTTTGAAC"}
+		},
     "Archaeal:v6" :  
         { 
             "958F"  : {"domain":"archaea", "region":"v6", "direction":"F", "sequence":"AATTGGA.?TCAACGCC.G"},                        

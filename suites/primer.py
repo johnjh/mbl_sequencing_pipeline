@@ -6,6 +6,7 @@
 # dna_region
 import pipeline.primer_utils as putils
 from pipeline.utils import revcomp
+from pipeline.pipelinelogging import logger
 
 
 class Primer:
