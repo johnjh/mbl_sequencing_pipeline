@@ -1,6 +1,6 @@
 import logging
 import logging.handlers
-
+import os
 
 # create logger with 'spam_application'
 logger = logging.getLogger('')
@@ -14,7 +14,7 @@ logger.addHandler(ch)
 
 
 # Remove the default FileHandlers if present. 
-handler = logging.handlers.RotatingFileHandler("log/pipeline.log", maxBytes=10000000, backupCount=10)
+handler = logging.handlers.RotatingFileHandler(os.path.join(os.getcwd(),"pipeline.log"), maxBytes=10000000, backupCount=10)
 logger.addHandler(handler)
 handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")) 
 
