@@ -98,7 +98,7 @@ class TrimRun( object ):
             #  PrimerSuite Class
             #
             #####################
-            self.psuite[lane_key] = PrimerSuite(self.run, self.taxonomic_domain[lane_key],self.dna_regions[lane_key])
+            self.psuite[lane_key] = PrimerSuite(self.run, self.taxonomic_domain[lane_key],self.dna_regions[lane_key],lane_key)
             #self.runbin['psuite'][lane_key]= PrimerSuite(self.taxonomic_domain[lane_key],self.dna_regions[lane_key])
                 
             if(self.seqDirs[lane_key] == 'F' or self.seqDirs[lane_key] == 'B'):

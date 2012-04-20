@@ -25,7 +25,7 @@ class Primer:
 class PrimerSuite:
     """Doc string here.."""
     Name = "PrimerSuite"
-    def __init__(self, run, domain, region):
+    def __init__(self, run, domain, region, lane_key):
  
         self.domain = domain
         self.region = region
@@ -50,13 +50,29 @@ class PrimerSuite:
             self.domain = self.domain + "l"
         self.name = self.domain + ":" + self.region
 
-        suite = run.primer_suites[self.name]
-        for key, value in suite.items():
-            direction = value['direction']
-            sequence  = value['sequence']
-            domain    = value['domain']
-            region    = value['region']
-            p = Primer(key,direction,domain,region,sequence)
+        # now they can specify to not use the mbl primers for this lane/runkey
+        if run.samples[lane_key].use_mbl_primers == 1:
+            suite = run.primer_suites[self.name]
+            if suite != None:
+                for key, value in suite.items():
+                    direction = value['direction']
+                    sequence  = value['sequence']
+                    domain    = value['domain']
+                    region    = value['region']
+                    p = Primer(key,direction,domain,region,sequence)
+                    self.primer_list[direction].append(p)
+                    self.primer_seq_list[direction].append(sequence)
+                    self.primer_expanded_seq_list[direction] = self.primer_expanded_seq_list[direction] + p.expanded_seqs
+                    for eseq in p.expanded_seqs:
+                        self.primer_names[eseq] = key
+                        # we will need this for Reverse reads
+                        self.primer_names_by_reverse_complement[revcomp(eseq)] = key
+                
+        # they may have given some forward/reverse primers on a per lane/runkey basis
+        direction = 'F'
+        for idx, sequence in enumerate(run.samples[lane_key].forward_primers):
+            key = "cust_" + lane_key + "_" + direction + "_" + str(idx)
+            p = Primer(key,dir,'custom','custom',sequence)
             self.primer_list[direction].append(p)
             self.primer_seq_list[direction].append(sequence)
             self.primer_expanded_seq_list[direction] = self.primer_expanded_seq_list[direction] + p.expanded_seqs
@@ -65,7 +81,17 @@ class PrimerSuite:
                 # we will need this for Reverse reads
                 self.primer_names_by_reverse_complement[revcomp(eseq)] = key
                 
-            
+        direction = 'R'
+        for idx, sequence in enumerate(run.samples[lane_key].reverse_primers):
+            key = "cust_" + lane_key + "_" + direction + "_" + str(idx)
+            p = Primer(key,dir,'custom','custom',sequence)
+            self.primer_list[direction].append(p)
+            self.primer_seq_list[direction].append(sequence)
+            self.primer_expanded_seq_list[direction] = self.primer_expanded_seq_list[direction] + p.expanded_seqs
+            for eseq in p.expanded_seqs:
+                self.primer_names[eseq] = key
+                # we will need this for Reverse reads
+                self.primer_names_by_reverse_complement[revcomp(eseq)] = key
             
             
             

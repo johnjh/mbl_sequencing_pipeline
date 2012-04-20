@@ -37,7 +37,7 @@ import cogent
 import pipeline.constants as C
 
 if __name__ == '__main__':
-    THE_DEFAULT_BASE_OUTPUT = './pipeline_output'
+    THE_DEFAULT_BASE_OUTPUT = '.'
 
     usage = "usage: %prog [options] arg1 arg2"
     parser = argparse.ArgumentParser(description='MBL Sequence Pipeline')

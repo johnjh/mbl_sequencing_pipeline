@@ -120,13 +120,13 @@ class RunConfig:
             sample = Sample(lane_run_key)
             # has defaults -not required
             try:
-                sample.proximal_primers = lane_run_dict['forward_primers'].split(',')
+                sample.forward_primers = lane_run_dict['forward_primers'].split(',')
             except:
-                sample.proximal_primers = []
+                sample.forward_primers = []
             try:
-                sample.distal_primers = lane_run_dict['reverse_primers'].split(',')
+                sample.reverse_primers = lane_run_dict['reverse_primers'].split(',')
             except:
-                sample.distal_primers = []
+                sample.reverse_primers = []
             try:
                 sample.stop_sequences = lane_run_dict['stop_sequences'].split(',')
             except:
@@ -135,6 +135,11 @@ class RunConfig:
                 sample.anchor = lane_run_dict['anchor']
             except:
                 sample.anchor = ''
+            # should we try to trim with mbl primers as well as custom ones
+            try:
+                sample.use_mbl_primers = lane_run_dict['use_mbl_primers']
+            except:
+                sample.use_mbl_primers = 1
             # required
             sample.direction = lane_run_dict['direction']                                                                   
             sample.project = lane_run_dict['project_name']

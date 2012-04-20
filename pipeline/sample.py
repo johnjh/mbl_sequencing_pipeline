@@ -14,7 +14,6 @@ class Sample:
     """Doc string here.."""
     def __init__(self, run_key):
         self.run_key = run_key
-        self.primers = {}
         self.anchor = None
         self.pool = None
         self.lane = None
@@ -24,5 +23,7 @@ class Sample:
         self.taxonomic_domain = None
         self.project = None
         self.dataset = None
-        
+        self.forward_primers = []
+        self.reverse_primers = []
+        self.use_mbl_primers = 1
 
