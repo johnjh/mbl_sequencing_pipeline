@@ -16,7 +16,7 @@ import os
 import shutil
 import md5
 
-from suites.primer import PrimerSuite
+from suites.primer import PrimerSuite 
 from pipeline.primer_utils import *
 from pipeline.utils import *
 from pipeline.fastalib import *
@@ -246,7 +246,11 @@ class TrimRun( object ):
         tag      = ''
         lane_tag = ''
         # try to locate and remove the runkey
-        tag, trimmed_sequence = remove_runkey(raw_sequence, self.run_keys)
+        if self.run.force_runkey != None:
+            tag = self.run.force_runkey
+            trimmed_sequence = raw_sequence[len(tag):]
+        else:
+            tag, trimmed_sequence = remove_runkey(raw_sequence, self.run_keys)
 
         # did we find a run key
         if( not tag ):

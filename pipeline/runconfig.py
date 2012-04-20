@@ -85,6 +85,7 @@ class RunConfig:
         self.platform   = general_config['platform']
         self.input_dir  = general_config['input_dir']
         self.require_distal = general_config.get('require_distal', "1")
+        self.force_runkey = general_config.get('force_runkey', None)
         
         # parse out the input file info
         input_file_names  = [input_str.strip() for input_str in general_config['input_file_names'].split(',')]
