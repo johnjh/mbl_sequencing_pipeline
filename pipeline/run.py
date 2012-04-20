@@ -12,6 +12,6 @@
 from pipeline.runconfig import RunConfig
 
 class Run(RunConfig):
-    def __init__(self, config_file_path, baseoutputdir):
-        RunConfig.__init__(self, config_file_path, baseoutputdir)
+    def __init__(self, config_file_path, baseoutputdir, basepythondir):
+        RunConfig.__init__(self, config_file_path, baseoutputdir, basepythondir)
 

@@ -32,7 +32,7 @@ def configDictionaryFromFile(config_file_path):
 
 class RunConfig:
     """Doc string here."""
-    def __init__(self, config_info, baseoutputdir):
+    def __init__(self, config_info, baseoutputdir, basepythondir):
         self.run_date   = None
         self.platform   = None # enum('454','illumina','ion_torrent','')
         self.input_dir  = None
@@ -41,6 +41,8 @@ class RunConfig:
         self.run_keys = []
         self.run_key_lane_dict = {}
         self.samples = {}
+        self.base_python_dir = basepythondir
+
 
         # if the config_info was a file path to an .ini file then convert to a dictionary
         # we'll take the info as an ini file or dictionary so we can be called by an api
@@ -50,12 +52,17 @@ class RunConfig:
         self.initializeFromDictionary(config_dict)
 
         # primers should be in json format in a file and that file should be specified in the general section
-        primer_file = open(config_dict['general']['primer_file'])
+#        print "curr dir: " + os.getcwd()
+#        print "curr file all: " + os.path.realpath(__file__)
+#        print "curr file dir: " + os.path.dirname(os.path.realpath(__file__))
+#        primer_file = open(config_dict['general']['primer_file'])
+        primer_file = open(os.path.join(self.base_python_dir, "config/mbl_primers.json"))
         ascii_primer_str = primer_file.read()
         self.primer_suites = ast.literal_eval(ascii_primer_str)
         
         # anchors should be similarly specified
-        anchor_json_text = open(config_dict['general']['anchor_file']).read()
+#        anchor_json_text = open(config_dict['general']['anchor_file']).read()
+        anchor_json_text = open(os.path.join(self.base_python_dir, "config/mbl_anchors.json")).read()
         self.anchors = ast.literal_eval(anchor_json_text)
 
         # this is our default output dir

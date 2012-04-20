@@ -59,7 +59,8 @@ if __name__ == '__main__':
         loggerlevel = logging.INFO
     logger.setLevel(loggerlevel)    
     # read the config file
-    run = Run(args.configPath, args.baseoutputdirarg)     
+    run = Run(args.configPath, args.baseoutputdirarg, os.path.dirname(os.path.realpath(__file__)))  
+
     # now do all the work
     process(run, args.steps)
 
