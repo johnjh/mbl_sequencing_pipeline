@@ -16,6 +16,7 @@ class Chimera:
         self.usearch_cmd = 'usearch'
         self.abskew = '1.9'
         self.refdb = '/xraid2-2/g454/blastdbs/rRNA16S.gold.fasta'
+        self.its_refdb = '/xraid2-2/g454/blastdbs/fungalITS.fa'
         self.files = {}
         self.prefix = {}
         time.sleep(10)
@@ -107,6 +108,15 @@ class Chimera:
             
             out_fileName = self.prefix[lane_key] + ".chimeras.db"      
             
+            # which ref db to use?
+            ref_db = ''
+            if dna_region.upper() == 'ITS':
+                logger.debug("got an ITS dna region so using refdb: " + self.its_refdb)
+                ref_db = self.its_refdb
+            else:
+                logger.debug("using standard refdb: " + self.refdb)
+                ref_db = self.refdb
+                
             uchime_cmd = ["./clusterize/clusterize"]
             uchime_cmd.append(self.usearch_cmd)
             uchime_cmd.append("--uchime")
@@ -114,7 +124,7 @@ class Chimera:
             uchime_cmd.append("--uchimeout")
             uchime_cmd.append(out_fileName)
             uchime_cmd.append("--db")
-            uchime_cmd.append(self.refdb)
+            uchime_cmd.append(ref_db)
             
             
             try:

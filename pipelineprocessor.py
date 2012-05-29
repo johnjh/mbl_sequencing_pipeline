@@ -38,6 +38,27 @@ VAMPSUPLOAD = "vampsupload"
 
 existing_steps = [TRIM_STEP, CHIMERA_STEP, GAST_STEP, VAMPSUPLOAD]
 
+# the main loop for performing each of the user's supplied steps
+def process(run, steps):
+    # create output directory:
+    requested_steps = steps.split(",")            
+    
+    if not os.path.exists(run.output_dir):
+        logger.debug("Creating output directory: "+run.output_dir)
+        os.makedirs(run.output_dir)      
+                    
+    # loop through official list...this way we execute the
+    # users requested steps in the correct order                
+    for step in requested_steps:
+        if step not in existing_steps:
+            print "Invalid processing step: " + step
+            sys.exit()
+        else:
+            # call the method in here
+            step_method = globals()[step]
+            step_method(run)
+
+
 # perform trim step
 # TrimRun.trimrun() does all the work of looping over each input file and sequence in each file
 # all the stats are kept in the trimrun object
@@ -183,21 +204,3 @@ def vampsupload(run):
 #        myvamps.sequences(new_lane_keys)        
 #        myvamps.exports(new_lane_keys)
         
-def process(run, steps):
-    # create output directory:
-    requested_steps = steps.split(",")            
-    
-    if not os.path.exists(run.output_dir):
-        logger.debug("Creating output directory: "+run.output_dir)
-        os.makedirs(run.output_dir)      
-                    
-    # loop through official list...this way we execute the
-    # users requested steps in the correct order                
-    for step in requested_steps:
-        if step not in existing_steps:
-            print "Invalid processing step: " + step
-            sys.exit()
-        else:
-            # call the method in here
-            step_method = globals()[step]
-            step_method(run)

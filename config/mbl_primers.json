@@ -1,8 +1,8 @@
 {
-	"Eukaryal:ITS-1" : 
+	"Eukaryal:ITS1" : 
 		{
-			"ITS-1F" :  {"domain":"eukarya", "region":"ITS-1", "direction":"F","sequence":"GTAAAAGTCGTAACAAGGTTTC"},
-			"ITS-1R" :  {"domain":"eukarya", "region":"ITS-1", "direction":"R","sequence":"GTGAATCATCGARTCTTTGAAC"}
+			"ITS-1F" :  {"domain":"eukarya", "region":"ITS1", "direction":"F","sequence":"GTAAAAGTCGTAACAAGGTTTC"},
+			"ITS-1R" :  {"domain":"eukarya", "region":"ITS1", "direction":"R","sequence":"GTGAATCATCGARTCTTTGAAC"}
 		},
     "Bacterial:v1v3" : 
         {
