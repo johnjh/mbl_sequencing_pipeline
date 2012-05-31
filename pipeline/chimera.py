@@ -56,7 +56,7 @@ class Chimera:
             #clusterize uchime454 -replace -r self.rundate -t chimeras_denovo
 
             
-            uchime_cmd = ["./clusterize/clusterize"]
+            uchime_cmd = ["clusterize"]
             uchime_cmd.append(self.usearch_cmd)
             uchime_cmd.append("--uchime")
             uchime_cmd.append(self.files[lane_key]['abund'])
@@ -117,7 +117,7 @@ class Chimera:
                 logger.debug("using standard refdb: " + self.refdb)
                 ref_db = self.refdb
                 
-            uchime_cmd = ["./clusterize/clusterize"]
+            uchime_cmd = ["clusterize"]
             uchime_cmd.append(self.usearch_cmd)
             uchime_cmd.append("--uchime")
             uchime_cmd.append(self.files[lane_key]['abund'])
